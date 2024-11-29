@@ -1,4 +1,4 @@
-local ezlib = {};
+local tzlib = {};
 
 ------------------------------------------------------------------------------
 -- Stores the functions and variables essential for the UI to work.
@@ -955,9 +955,9 @@ interactableElements.new = function()
 end
 
 ------------------------------------------------------------------------------
--- ezlib.enum
+-- tzlib.enum
 
-ezlib.enum = {
+tzlib.enum = {
 	notifType = {
 		text = 0,
 		longText = 1,
@@ -978,51 +978,51 @@ ezlib.enum = {
 };
 
 ------------------------------------------------------------------------------
--- ezlib.create and newNotification Class
+-- tzlib.create and newNotification Class
 
 coreVars.activeNotification = nil;
 coreVars.notificationHolder = Instance.new("ScreenGui", game.CoreGui);
-ezlib.newNotif = function(notifType, text, buttonLT, buttonRT, buttonLC, buttonRC, theme)
+tzlib.newNotif = function(notifType, text, buttonLT, buttonRT, buttonLC, buttonRC, theme)
 	local notif = {};
 	notif.notifType = notifType;
 	local notifInstance;
 
 	theme = theme or coreVars.colors;
 
-	if notif.notifType == ezlib.enum.notifType.text then
+	if notif.notifType == tzlib.enum.notifType.text then
 		notifInstance = coreGUIFuncs.newNotifText(false, text, coreVars.notificationHolder, theme);
-	elseif notif.notifType == ezlib.enum.notifType.longText then
+	elseif notif.notifType == tzlib.enum.notifType.longText then
 		notifInstance = coreGUIFuncs.newNotifText(true, text, coreVars.notificationHolder, theme);
-	elseif notif.notifType == ezlib.enum.notifType.buttons then
+	elseif notif.notifType == tzlib.enum.notifType.buttons then
 		notif.callbackL = buttonLC or function() end;
 		notif.callbackR = buttonRC or function() end;
 		notifInstance = coreGUIFuncs.newNotifButton(text, buttonLT, buttonRT, coreVars.notificationHolder, theme);
 		notifInstance.buttonl.MouseButton1Click:Connect(function()
 			notif.buttonLeftClicked:Fire();
 			notif.buttonClicked:Fire();
-			notif.fireCallback(ezlib.enum.button.left);
+			notif.fireCallback(tzlib.enum.button.left);
 		end)
 		notifInstance.buttonr.MouseButton1Click:Connect(function() 
 			notif.buttonRightClicked:Fire();
 			notif.buttonClicked:Fire();
-			notif.fireCallback(ezlib.enum.button.right);
+			notif.fireCallback(tzlib.enum.button.right);
 		end)
 	else
 		error("Invalid parameter for newNotification");
 	end
 
 	notif.fireCallback = function(button)
-		if button == ezlib.enum.button.left then
+		if button == tzlib.enum.button.left then
 			notif.callbackL();
-		elseif button == ezlib.enum.button.right then
+		elseif button == tzlib.enum.button.right then
 			notif.callbackR();
 		end
 	end
 
 	notif.changeCallback = function(button, callback)
-		if button == ezlib.enum.button.left then
+		if button == tzlib.enum.button.left then
 			notif.buttonLC = callback;
-		elseif button == ezlib.enum.button.right then
+		elseif button == tzlib.enum.button.right then
 			notif.buttonRC = callback;
 		end
 	end
@@ -1086,25 +1086,25 @@ ezlib.create = function(name, parent, pos, theme, gameID, deleteOldGUI)
 	local create = {};
 
 	-- Format parameters so no errors occcur.
-	name = name or "Ez Hub";
+	name = name or "tz Hub";
 	parent = parent or game.CoreGui;
 	pos = pos or UDim2.new(0.5, 0, 0.5, 0);
 	theme = theme or coreVars.colors;	-- themes. For coloring the gui differently
 	if deleteOldGUI == nil then deleteOldGUI = true; end
 	if deleteOldGUI then
 		for i,v in pairs(game.CoreGui:GetChildren()) do
-			if v.Name == "EzLib" then v:Destroy(); end
+			if v.Name == "tzLib" then v:Destroy(); end
 			if v.Name == "dropdownContainer" then v:Destroy(); end
 		end
 		for i,v in pairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do
-			if v.Name == "EzLib" then v:Destroy(); end
+			if v.Name == "tzLib" then v:Destroy(); end
 			if v.Name == "dropdownContainer" then v:Destroy(); end
 		end
 	end
 
 	if gameID and gameID ~= game.PlaceId then
 		local continueAnyway;
-		local notif = ezlib.newNotif(ezlib.enum.notifType.buttons, "Incompatible game for GUI. Continue anyway?", "Yes", "No",
+		local notif = tzlib.newNotif(ezlib.enum.notifType.buttons, "Incompatible game for GUI. Continue anyway?", "Yes", "No",
 			function() continueAnyway = true; end,
 			function() continueAnyway = false; end);
 
