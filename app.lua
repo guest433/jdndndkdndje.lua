@@ -1104,7 +1104,7 @@ ezlib.create = function(name, parent, pos, theme, gameID, deleteOldGUI)
 
 	if gameID and gameID ~= game.PlaceId then
 		local continueAnyway;
-		local notif = tzlib.newNotif(ezlib.enum.notifType.buttons, "Incompatible game for GUI. Continue anyway?", "Yes", "No",
+		local notif = tzlib.newNotif(tzlib.enum.notifType.buttons, "Incompatible game for GUI. Continue anyway?", "Yes", "No",
 			function() continueAnyway = true; end,
 			function() continueAnyway = false; end);
 
@@ -1774,4 +1774,4 @@ end
 
 ------------------------------------------------------------------------------
 
-return ezlib;
+return tzlib;
