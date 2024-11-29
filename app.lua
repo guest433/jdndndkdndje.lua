@@ -69,37 +69,62 @@ coreFuncs.roundify = function(element, radius)
 end
 
 coreFuncs.isUsingSlider = function()
-	return coreVars.usingSlider;
+	return coreVars.usingSlider
 end
 
 coreFuncs.dragifyLib = function(mainFrame)
-	local dragging;
-	local dragInput;
-	local dragStart;
-	local startPos;
+	local dragging = false
+	local dragStart
+	local startPos
+	local dragConnection -- To manage InputChanged connection
 
 	local function update(input)
-		if coreFuncs.isUsingSlider() then return end
-		Delta = input.Position - dragStart;
-		Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y);
-		game:GetService("TweenService"):Create(mainFrame, TweenInfo.new(.15), {Position = Position}):Play();
+		-- Update position in real-time while dragging
+		if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+			local delta = input.Position - dragStart
+			mainFrame.Position = UDim2.new(
+				startPos.X.Scale,
+				startPos.X.Offset + delta.X,
+				startPos.Y.Scale,
+				startPos.Y.Offset + delta.Y
+			)
+		end
 	end
 
 	mainFrame.InputBegan:Connect(function(input)
 		if coreFuncs.isUsingSlider() then return end
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-			dragging = true;
-			dragStart = input.Position;
-			startPos = mainFrame.Position;
+			dragging = true
+			dragStart = input.Position
+			startPos = mainFrame.Position
 
+			-- Disconnect any previous drag connection to prevent memory leaks
+			if dragConnection then
+				dragConnection:Disconnect()
+			end
+
+			-- Connect InputChanged to update dragging position
+			dragConnection = game:GetService("UserInputService").InputChanged:Connect(function(input)
+				if dragging then
+					update(input)
+				end
+			end)
+
+			-- Handle drag end
 			input.Changed:Connect(function()
 				if input.UserInputState == Enum.UserInputState.End then
-					dragging = false;
+					dragging = false
+					-- Optional: Smoothly snap the element to the final position using TweenService
+					game:GetService("TweenService"):Create(
+						mainFrame,
+						TweenInfo.new(0.1), -- Short snap duration
+						{ Position = mainFrame.Position }
+					):Play()
 				end
 			end)
 		end
 	end)
-
+end
 	mainFrame.InputChanged:Connect(function(input)
 		if coreFuncs.isUsingSlider() then return end
 		if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
